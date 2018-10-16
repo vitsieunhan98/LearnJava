@@ -1,63 +1,84 @@
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
 
 public class Server {
 
-	public Server() {
-		// TODO Auto-generated constructor stub
-	}
-
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		ServerSocket listener = null;
-		String mess;
-		BufferedReader ins; // input từ client (đọc dữ liệu client nhập vào)
-		BufferedWriter ous; // output tới client (gửi dữ liệu tới client)
-		Socket server = null;
+	static InetAddress host;
+	static ServerSocket listener;
+	
+	static int clientNumber = 0;
+	
+	public Hashtable<String, ClientConnect> listUser;
+	
+	private void run() {
 		
 		try {
+			host = InetAddress.getByName("192.168.100.6");
 			listener = new ServerSocket(9999);
-		}catch(Exception e) {
-			System.out.println(e);
-			System.exit(1);
-		}
-		
-		try {
-			System.out.println("Server is waiting to accept user...");
-			
-			//Chấp nhận 1 yêu cầu kết nối từ client
-			server = listener.accept();
-			System.out.println("Accept a client!");
-			
-			//Mở luồng vào-ra trên Socket tại server
-			ins = new BufferedReader(new InputStreamReader(server.getInputStream()));
-			ous = new BufferedWriter(new OutputStreamWriter(server.getOutputStream()));
+			listUser = new Hashtable<String, ClientConnect>();
 			
 			while(true) {
-				//đọc dữ liệu từ client gửi tới server
-				mess = ins.readLine();
-				
-				// Ghi vào luồng ra của Socket tại server
-				ous.write(">>" + mess);
-				ous.newLine();
-				ous.flush(); // Đẩy dữ liệu đi
-				
-				if(mess.equals("QUIT")) {
-					ous.write(">> OK");
-					ous.newLine();
-					ous.flush();
-					break;
-				}
+				Socket client = listener.accept();
+				new ClientConnect(this, client, ++clientNumber);
 			}
 		} catch(Exception e) {
-			System.out.println(e);
 			e.printStackTrace();
 		}
-		System.out.println("Server stopped!");
 	}
 
+	public static void main(String[] args) throws IOException{
+		// TODO Auto-generated method stub
+		new ServerFrame();
+		new Server().run();
+	}
+	
+	public String getAllUser() {
+		String list = "";
+		
+		Enumeration e = listUser.keys();
+		while(e.hasMoreElements()) {
+			list += (String)e.nextElement() + "\n";
+		}
+		
+		return list;
+	}
+	
+	public void sendUpdateList(String nick) {
+		String name = "";
+		
+		Enumeration e = listUser.keys();
+		while(e.hasMoreElements()) {
+			name = (String) e.nextElement();
+			
+			if(!name.equals(nick)) {
+				listUser.get(name).sendMSG("online", getAllUser());
+			}
+		}
+	}
+	
+	public void sendAll(String nick, String msg) {
+		String name = "";
+		
+		Enumeration e = listUser.keys();
+		while(e.hasMoreElements()) {
+			name = (String) e.nextElement();
+			
+			if(!name.equals(nick)) {
+				listUser.get(name).sendMSG("new_chat", msg);
+			}
+		}
+	}
 }

@@ -1,53 +1,63 @@
+import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
+import javax.swing.border.EmptyBorder;
+import javax.swing.SpringLayout;
+import javax.swing.JLabel;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
+import javax.swing.JTextField;
+import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
+import java.awt.event.ActionEvent;
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.SpringLayout;
-import javax.swing.border.EmptyBorder;
+public class ClientFrame extends JFrame implements ActionListener{
 
-public class Client extends JFrame implements ActionListener{
-	
 	private JPanel contentPane;
 	
-	private JTextArea screen;
-	private JLabel lblChat;
-	private JTextField input;
-	private JTextArea list_online;
-	private JTextField nick;
-	private JLabel lblnick;
-	private JButton btnOk;
-	private JButton btnSend;
+	JTextArea screen;
+	JLabel lblChat;
+	JTextField input;
+	public static JTextArea list_online;
+	public JTextField nick;
+	
+	JLabel lblnick;
+	JButton btnOk;
+	JButton btnSend;
 	private JLabel lblOnline;
-	private JButton btnLogout;
 	
-	final static String HostServer = "192.168.100.6";
-	private Socket client;
+	JButton btnLogout;
 	
-    private DataOutputStream os;
-	private DataInputStream is;
+	Client client;
 	
-	DataStream datastream;
-	
-	
-	public Client() {
-		super("Client");
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					ClientFrame frame = new ClientFrame();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public ClientFrame() {
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 889, 609);
@@ -122,7 +132,6 @@ public class Client extends JFrame implements ActionListener{
 		contentPane.add(lblOnline);
 		
 		btnLogout = new JButton("Logout");
-		btnLogout.addActionListener(this);
 		btnLogout.setVisible(false);
 		sl_contentPane.putConstraint(SpringLayout.NORTH, btnLogout, -2, SpringLayout.NORTH, lblnick);
 		sl_contentPane.putConstraint(SpringLayout.WEST, btnLogout, 73, SpringLayout.EAST, btnOk);
@@ -130,56 +139,7 @@ public class Client extends JFrame implements ActionListener{
 		
 		this.setVisible(true);
 	}
-	
-	public void run() {
-		try {
-			
-			client = new Socket(HostServer, 9999);
-			os = new DataOutputStream(client.getOutputStream());
-			is = new DataInputStream(client.getInputStream());
-			
-		} catch(Exception e) {
-			e.printStackTrace();
-			System.exit(0);
-		}
-	}
-	
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		new Client().run();
-	}
-	
-	private void Logout() {
-		datastream.stopThread();
-		try {
-			sendMSG("out");
-			os.close();
-			is.close();
-			client.close();
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-		System.exit(0);
-	}
-	
-	private void sendMSG(String data) {
-		try {
-			os.writeUTF(data);
-			os.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void getMSG(String title, String msg) {
-		if(title.equals("online")) {
-			this.list_online.setText(msg);
-		}
-		else if(title.equals("new_chat")) {
-			this.screen.append(msg + "\n");
-		}	
-	}
-	
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
@@ -190,24 +150,14 @@ public class Client extends JFrame implements ActionListener{
 				btnOk.setVisible(false);
 				btnLogout.setVisible(true);
 				
-				sendMSG(nick.getText());
-				screen.append("Login Successfull\n");
-				datastream = new DataStream(this, this.is);
-				this.setTitle(nick.getText());
+				client = new Client();
+				client.sendMSG(nick.getText());
+				
 			}
 		}
+		
 		else if(e.getSource().equals(btnLogout)) {
-			Logout();
-		}
-		else if(e.getSource().equals(btnSend)) {
-			String msg = input.getText();
-			if(!msg.equals("")) {
-				this.screen.append("Me : " + msg + "\n");
-				sendMSG("chatting");
-				sendMSG(msg);
-			}
-			input.setText("");
+			client.Logout();
 		}
 	}
-	
 }
