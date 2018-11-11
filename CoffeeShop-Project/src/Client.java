@@ -166,7 +166,6 @@ public class Client extends JFrame implements ActionListener {
 			}
 		}
 		else if(e.getSource().equals(btnSignUp)) {
-			this.setVisible(false);
 			new ClientSignup().setVisible(true);
 		}
 	}

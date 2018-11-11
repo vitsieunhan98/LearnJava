@@ -30,6 +30,9 @@ public class AdminFrame extends JFrame implements ActionListener{
 	private JButton btnListOrder;
 	private JButton btnListUser;
 	private JButton btnLogout;
+	private JButton btnAddProduct;
+	private JButton btnDeleteProduct;
+	private JButton btnRefresh;
 	private GroupLayout gl_contentPane;
 	
 	private DefaultTableModel modelpro;
@@ -40,6 +43,10 @@ public class AdminFrame extends JFrame implements ActionListener{
 	private JTable table_order;
 	private JTable table_user;
 	private JScrollPane scrollPane;
+	
+	private Vector columnpro;
+	private Vector columnord;
+	private Vector columnuser;
 	
 	/**
 	 * Launch the application.
@@ -58,35 +65,35 @@ public class AdminFrame extends JFrame implements ActionListener{
 	}
 
 	public void createProductTable() throws SQLException {
-		Vector column = new Vector();
-		column.add("Id");
-		column.add("Product");
-		column.add("Price");
-		column.add("Type");
-		modelpro.setColumnIdentifiers(column);
+		columnpro = new Vector();
+		columnpro.add("Id");
+		columnpro.add("Product");
+		columnpro.add("Price");
+		columnpro.add("Type");
+		modelpro.setColumnIdentifiers(columnpro);
 		sv.getListProduct();
 	}
 	
 	public void createOrderTable() throws SQLException {
-		Vector column = new Vector();
-		column.add("Id");
-		column.add("Product");
-		column.add("User");
-		column.add("Address");
-		column.add("Date");
-		column.add("Price");
-		modelord.setColumnIdentifiers(column);
+		columnord = new Vector();
+		columnord.add("Id");
+		columnord.add("Product");
+		columnord.add("User");
+		columnord.add("Address");
+		columnord.add("Date");
+		columnord.add("Price");
+		modelord.setColumnIdentifiers(columnord);
 		sv.getListOrder();
 	}
 	
 	public void createUserTable() throws SQLException {
-		Vector column = new Vector();
-		column.add("Id");
-		column.add("Full Name");
-		column.add("Email");
-		column.add("Phone");
-		column.add("Role");
-		modeluser.setColumnIdentifiers(column);
+		columnuser = new Vector();
+		columnuser.add("Id");
+		columnuser.add("Full Name");
+		columnuser.add("Email");
+		columnuser.add("Phone");
+		columnuser.add("Role");
+		modeluser.setColumnIdentifiers(columnuser);
 		sv.getListUser();
 	}
 	
@@ -103,6 +110,7 @@ public class AdminFrame extends JFrame implements ActionListener{
 			
 			modelpro.addRow(row);
 		}
+		
 	}
 	
 	public void updateOrderTable() throws SQLException {
@@ -120,6 +128,7 @@ public class AdminFrame extends JFrame implements ActionListener{
 			
 			modelord.addRow(row);
 		}
+		
 	}
 	
 	public void updateUserTable() throws SQLException {
@@ -136,6 +145,7 @@ public class AdminFrame extends JFrame implements ActionListener{
 			
 			modeluser.addRow(row);
 		}
+		
 	}
 	
 	/**
@@ -165,6 +175,15 @@ public class AdminFrame extends JFrame implements ActionListener{
 		
 		scrollPane = new JScrollPane();
 		
+		btnAddProduct = new JButton("Add Product");
+		btnAddProduct.addActionListener(this);
+		
+		btnDeleteProduct = new JButton("Delete Product");
+		btnDeleteProduct.addActionListener(this);
+		
+		btnRefresh = new JButton("Refresh");
+		btnRefresh.addActionListener(this);
+		
 		gl_contentPane = new GroupLayout(contentPane);
 		gl_contentPane.setHorizontalGroup(
 			gl_contentPane.createParallelGroup(Alignment.TRAILING)
@@ -177,9 +196,14 @@ public class AdminFrame extends JFrame implements ActionListener{
 					.addComponent(btnListUser)
 					.addContainerGap())
 				.addGroup(gl_contentPane.createSequentialGroup()
-					.addContainerGap(387, Short.MAX_VALUE)
-					.addComponent(btnLogout)
-					.addGap(380))
+					.addContainerGap(138, Short.MAX_VALUE)
+					.addComponent(btnDeleteProduct)
+					.addGap(115)
+					.addComponent(btnRefresh)
+					.addGap(118)
+					.addComponent(btnAddProduct)
+					.addGap(83)
+					.addComponent(btnLogout))
 				.addComponent(scrollPane, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 838, Short.MAX_VALUE)
 		);
 		gl_contentPane.setVerticalGroup(
@@ -193,7 +217,11 @@ public class AdminFrame extends JFrame implements ActionListener{
 					.addPreferredGap(ComponentPlacement.RELATED)
 					.addComponent(scrollPane, GroupLayout.DEFAULT_SIZE, 356, Short.MAX_VALUE)
 					.addPreferredGap(ComponentPlacement.RELATED)
-					.addComponent(btnLogout))
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+						.addComponent(btnAddProduct)
+						.addComponent(btnDeleteProduct)
+						.addComponent(btnLogout)
+						.addComponent(btnRefresh)))
 		);
 		
 		modelpro = new DefaultTableModel();
@@ -250,6 +278,20 @@ public class AdminFrame extends JFrame implements ActionListener{
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
+		}
+		else if(e.getSource().equals(btnAddProduct)) {
+			new AddProductFrame().setVisible(true);
+		}
+		else if(e.getSource().equals(btnDeleteProduct)) {
+			try {
+				new DeleteProductFrame().setVisible(true);
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+		}
+		else if(e.getSource().equals(btnRefresh)) {
+			
 		}
 	}
 }

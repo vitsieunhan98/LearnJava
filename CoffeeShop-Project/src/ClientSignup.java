@@ -7,6 +7,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -144,8 +145,8 @@ public class ClientSignup extends JFrame implements ActionListener {
 		else if(e.getSource().equals(btnSignUp)) {
 			try {
 				sv.getSignUp(fullname.getText(), email.getText(), password.getText(), phone.getText());
+				new JOptionPane().showMessageDialog(null, "Sign up Successfull");
 				this.setVisible(false);
-				new Client();
 			} catch (SQLException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();

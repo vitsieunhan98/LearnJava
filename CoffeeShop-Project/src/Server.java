@@ -164,6 +164,20 @@ public class Server {
 		state.close();
 	}
 	
+	public static void addProduct(String name, String price, int type) throws SQLException {
+		state = cdb.connect(conn, URL, USER, PASSWORD, state);
+		String sql = "insert into product(Name,	Price, Id_Type) values('" + name + "','" + price + "'," + type + ")";
+		state.execute(sql);
+		state.close();
+	}
+	
+	public static void deleteProduct(int id) throws SQLException {
+		state = cdb.connect(conn, URL, USER, PASSWORD, state);
+		String sql = "delete from product where Id = " + id;
+		state.execute(sql);
+		state.close();
+	}
+	
 	public static void main(String[] args) throws SQLException, IOException {
 		new ServerFrame();
 		new Server().run();

@@ -115,8 +115,6 @@ public class ServerFrame extends JFrame implements ActionListener{
 		);
 		contentPane.setLayout(gl_contentPane);
 		this.setVisible(true);
-		
-		sv.getListUser();
 	}
 
 	@Override
