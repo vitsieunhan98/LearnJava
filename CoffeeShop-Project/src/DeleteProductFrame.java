@@ -43,6 +43,7 @@ public class DeleteProductFrame extends JFrame {
 	}
 	
 	public void updateTable() throws SQLException {
+		sv.getListProduct();
 		List product = new ArrayList<>(sv.list_product);
 		
 		for(int i=0; i<product.size(); i++) {

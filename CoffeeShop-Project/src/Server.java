@@ -178,6 +178,18 @@ public class Server {
 		state.close();
 	}
 	
+	public static int getLastId() throws SQLException {
+		state = cdb.connect(conn, URL, USER, PASSWORD, state);
+		String sql = "select * from product order by Id limit 1";
+		
+		int rs = 0;
+		ResultSet result = state.executeQuery(sql);
+		if(result.next()) {
+			rs = result.getInt("Id");
+		}
+		return rs;
+	}
+	
 	public static void main(String[] args) throws SQLException, IOException {
 		new ServerFrame();
 		new Server().run();

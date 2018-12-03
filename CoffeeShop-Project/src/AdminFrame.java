@@ -4,10 +4,14 @@ import java.awt.EventQueue;
 import java.awt.Font;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -21,6 +25,7 @@ import javax.swing.BoxLayout;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 
 public class AdminFrame extends JFrame implements ActionListener{
 
@@ -36,9 +41,10 @@ public class AdminFrame extends JFrame implements ActionListener{
 	private GroupLayout gl_contentPane;
 	
 	private DefaultTableModel modelpro;
-	private DefaultTableModel modelord;
+	private DefaultTableModel modelorder;
 	private DefaultTableModel modeluser;
-	private Server sv;
+	
+	public Server sv;
 	private JTable table_product;
 	private JTable table_order;
 	private JTable table_user;
@@ -63,41 +69,9 @@ public class AdminFrame extends JFrame implements ActionListener{
 			}
 		});
 	}
-
-	public void createProductTable() throws SQLException {
-		columnpro = new Vector();
-		columnpro.add("Id");
-		columnpro.add("Product");
-		columnpro.add("Price");
-		columnpro.add("Type");
-		modelpro.setColumnIdentifiers(columnpro);
-		sv.getListProduct();
-	}
-	
-	public void createOrderTable() throws SQLException {
-		columnord = new Vector();
-		columnord.add("Id");
-		columnord.add("Product");
-		columnord.add("User");
-		columnord.add("Address");
-		columnord.add("Date");
-		columnord.add("Price");
-		modelord.setColumnIdentifiers(columnord);
-		sv.getListOrder();
-	}
-	
-	public void createUserTable() throws SQLException {
-		columnuser = new Vector();
-		columnuser.add("Id");
-		columnuser.add("Full Name");
-		columnuser.add("Email");
-		columnuser.add("Phone");
-		columnuser.add("Role");
-		modeluser.setColumnIdentifiers(columnuser);
-		sv.getListUser();
-	}
 	
 	public void updateProductTable() throws SQLException {
+		sv.getListProduct();
 		List product = new ArrayList<>(sv.list_product);
 		
 		for(int i=0; i<product.size(); i++) {
@@ -111,9 +85,12 @@ public class AdminFrame extends JFrame implements ActionListener{
 			modelpro.addRow(row);
 		}
 		
+		table_product.setModel(modelpro);
+		modelpro.fireTableDataChanged();
 	}
 	
 	public void updateOrderTable() throws SQLException {
+		sv.getListOrder();
 		List order = new ArrayList<>(sv.list_order);
 		
 		for(int i=0; i<order.size(); i++) {
@@ -126,12 +103,15 @@ public class AdminFrame extends JFrame implements ActionListener{
 			row.add(one.getDate_order());
 			row.add(one.getPrice());
 			
-			modelord.addRow(row);
+			modelorder.addRow(row);
 		}
 		
+		table_order.setModel(modelorder);
+		modelorder.fireTableDataChanged();
 	}
 	
 	public void updateUserTable() throws SQLException {
+		sv.getListUser();
 		List user = new ArrayList<>(sv.list_user);
 		
 		for(int i=0; i<user.size(); i++) {
@@ -146,6 +126,20 @@ public class AdminFrame extends JFrame implements ActionListener{
 			modeluser.addRow(row);
 		}
 		
+		table_user.setModel(modeluser);
+		modeluser.fireTableDataChanged();
+	}
+	
+	public void insert(String name, String price, int type) throws SQLException {
+		int id = sv.getLastId() + 1;
+		DefaultTableModel model = (DefaultTableModel) table_product.getModel();
+		Vector row = new Vector();
+		row.add(id);
+		row.add(name);
+		row.add(price);
+		row.add(type);
+		
+		model.addRow(row);
 	}
 	
 	/**
@@ -155,6 +149,51 @@ public class AdminFrame extends JFrame implements ActionListener{
 	public AdminFrame() throws SQLException {
 		super("Manager");
 		
+		modelpro = new DefaultTableModel(
+				new Object[][] {
+				},
+				new String[] {
+					"Id", "Product", "Price", "Type"
+				}
+			) {
+				Class[] columnTypes = new Class[] {
+					Integer.class, String.class, String.class, String.class
+				};
+				public Class getColumnClass(int columnIndex) {
+					return columnTypes[columnIndex];
+				}
+			};
+		
+		modeluser = new DefaultTableModel(
+				new Object[][] {
+				},
+				new String[] {
+					"Id", "Fullname", "Email", "Phone", "Role"
+				}
+			) {
+				Class[] columnTypes = new Class[] {
+					Integer.class, String.class, String.class, String.class, String.class
+				};
+				public Class getColumnClass(int columnIndex) {
+					return columnTypes[columnIndex];
+				}
+			};	
+		
+		modelorder = new DefaultTableModel(
+				new Object[][] {
+				},
+				new String[] {
+					"Id", "Product", "User", "Address", "Date", "Price"
+				}
+			) {
+				Class[] columnTypes = new Class[] {
+					Integer.class, String.class, String.class, String.class, String.class, String.class
+				};
+				public Class getColumnClass(int columnIndex) {
+					return columnTypes[columnIndex];
+				}
+			};
+				
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 866, 490);
 		contentPane = new JPanel();
@@ -224,37 +263,28 @@ public class AdminFrame extends JFrame implements ActionListener{
 						.addComponent(btnRefresh)))
 		);
 		
-		modelpro = new DefaultTableModel();
-		modelord = new DefaultTableModel();
-		modeluser = new DefaultTableModel();
 		contentPane.setLayout(gl_contentPane);
 		
 		table_product = new JTable();
 		table_product.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		table_product.setBackground(Color.WHITE);
-		createProductTable();
 		updateProductTable();
-		table_product.setModel(modelpro);
 		table_product.setVisible(false);
 		
 		table_order = new JTable();
 		table_order.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		table_order.setBackground(Color.WHITE);
-		createOrderTable();
 		updateOrderTable();
-		table_order.setModel(modelord);
 		table_order.setVisible(false);
 		
 		table_user = new JTable();
 		table_user.setFont(new Font("Tahoma", Font.PLAIN, 17));
 		table_user.setBackground(Color.WHITE);
-		createUserTable();
 		updateUserTable();
-		table_user.setModel(modeluser);
 		table_user.setVisible(false);
 		
 	}
-
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
@@ -291,7 +321,138 @@ public class AdminFrame extends JFrame implements ActionListener{
 			}
 		}
 		else if(e.getSource().equals(btnRefresh)) {
-			
+			modelpro.setRowCount(0);
+			try {
+				sv.list_product = new ArrayList<>();
+				sv.list_order = new ArrayList<>();
+				sv.list_user = new ArrayList<>();
+				updateProductTable();
+				updateOrderTable();
+				updateUserTable();
+			} catch (SQLException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 		}
 	}
 }
+
+class AddProductFrame extends JFrame {
+
+	private JPanel contentPane;
+	private JTextField name;
+	private JTextField price;
+	private JComboBox comboBox;
+	private JButton btnAdd;
+	
+	private Server sv;
+	/**
+	 * Launch the application.
+	 */
+	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					AddProductFrame frame = new AddProductFrame();
+					frame.setVisible(true);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+	
+	/**
+	 * Create the frame.
+	 */
+	public AddProductFrame() {
+		setTitle("Add Product");
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setBounds(100, 100, 595, 280);
+		contentPane = new JPanel();
+		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
+		setContentPane(contentPane);
+		
+		JLabel lblName = new JLabel("Name");
+		lblName.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		
+		JLabel lblPrice = new JLabel("Price");
+		lblPrice.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		
+		JLabel lblType = new JLabel("Type");
+		lblType.setFont(new Font("Tahoma", Font.PLAIN, 16));
+		
+		name = new JTextField();
+		name.setColumns(10);
+		
+		price = new JTextField();
+		price.setColumns(10);
+		
+		comboBox = new JComboBox();
+		comboBox.addItem("Drink");
+		comboBox.addItem("Food");
+		
+		btnAdd = new JButton("Add");
+		btnAdd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(!name.getText().equals("") && !price.getText().equals("")) {
+					String namee = name.getText();
+					String pricee = price.getText();
+					int type = (comboBox.getSelectedItem().equals("Drink")) ? 1 : 2;
+					
+					try {
+						sv.addProduct(namee, pricee, type);
+						new AdminFrame().insert(namee, pricee, type);
+					} catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+					new JOptionPane().showMessageDialog(null, "Add Product Successfull");
+					setVisible(false);
+					
+				}
+			}
+		});
+		
+		GroupLayout gl_contentPane = new GroupLayout(contentPane);
+		gl_contentPane.setHorizontalGroup(
+			gl_contentPane.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addGap(124)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addComponent(lblName)
+						.addComponent(lblPrice)
+						.addComponent(lblType))
+					.addGap(35)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING, false)
+							.addComponent(price)
+							.addComponent(name, GroupLayout.DEFAULT_SIZE, 248, Short.MAX_VALUE))
+						.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING, false)
+							.addComponent(btnAdd, GroupLayout.DEFAULT_SIZE, GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+							.addComponent(comboBox, 0, 98, Short.MAX_VALUE)))
+					.addContainerGap(119, Short.MAX_VALUE))
+		);
+		gl_contentPane.setVerticalGroup(
+			gl_contentPane.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_contentPane.createSequentialGroup()
+					.addGap(54)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblName)
+						.addComponent(name, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addGap(18)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
+						.addComponent(lblPrice)
+						.addComponent(price, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addGap(18)
+					.addGroup(gl_contentPane.createParallelGroup(Alignment.BASELINE)
+						.addComponent(lblType)
+						.addComponent(comboBox, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
+					.addGap(18)
+					.addComponent(btnAdd)
+					.addContainerGap(24, Short.MAX_VALUE))
+		);
+		contentPane.setLayout(gl_contentPane);	
+	}
+}
+
