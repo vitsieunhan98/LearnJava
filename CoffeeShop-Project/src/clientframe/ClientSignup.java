@@ -4,6 +4,7 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.border.EmptyBorder;
 
 import app.Client;
@@ -28,7 +29,7 @@ public class ClientSignup extends JFrame implements ActionListener {
 	private JPanel contentPane;
 	private JTextField fullname;
 	private JTextField email;
-	private JTextField password;
+	private JPasswordField password;
 	private JTextField phone;
 	private JButton btnSignUp;
 	private JButton btnBack;
@@ -77,7 +78,7 @@ public class ClientSignup extends JFrame implements ActionListener {
 		email = new JTextField();
 		email.setColumns(10);
 		
-		password = new JTextField();
+		password = new JPasswordField();
 		password.setColumns(10);
 		
 		phone = new JTextField();

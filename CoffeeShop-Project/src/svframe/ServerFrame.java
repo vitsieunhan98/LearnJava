@@ -4,6 +4,7 @@ import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
@@ -25,7 +26,7 @@ public class ServerFrame extends JFrame implements ActionListener{
 	private static Server sv;
 	private JPanel contentPane;
 	private JTextField email;
-	private JTextField password;
+	private JPasswordField password;
 	private JButton btnLogin;
 	
 	/**
@@ -72,7 +73,7 @@ public class ServerFrame extends JFrame implements ActionListener{
 		email = new JTextField();
 		email.setColumns(10);
 		
-		password = new JTextField();
+		password = new JPasswordField();
 		password.setColumns(10);
 		
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);

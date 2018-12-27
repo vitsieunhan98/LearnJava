@@ -13,6 +13,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
@@ -31,7 +32,7 @@ public class Client extends JFrame implements ActionListener {
 	public static DataStream datastream;
 	private JPanel contentPane;
 	public JTextField email;
-	private JTextField password;
+	private JPasswordField password;
 	private JButton btnLogin;
 	private JButton btnSignUp;
 	private Server sv;
@@ -66,7 +67,7 @@ public class Client extends JFrame implements ActionListener {
 		JLabel lblPassword = new JLabel("Password");
 		lblPassword.setFont(new Font("Tahoma", Font.PLAIN, 18));
 		
-		password = new JTextField();
+		password = new JPasswordField();
 		password.setColumns(10);
 		
 		btnLogin = new JButton("Login");
